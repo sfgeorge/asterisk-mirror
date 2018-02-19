@@ -918,6 +918,7 @@ struct _map_x_s {
 /*! \brief Structure to handle SIP transfers. Dynamically allocated when needed */
 struct sip_refer {
 	AST_DECLARE_STRING_FIELDS(
+		AST_STRING_FIELD(dt_refer_to);          /*!< Place to store REFER-TO header */
 		AST_STRING_FIELD(refer_to);             /*!< Place to store REFER-TO extension */
 		AST_STRING_FIELD(refer_to_domain);      /*!< Place to store REFER-TO domain */
 		AST_STRING_FIELD(refer_to_urioption);   /*!< Place to store REFER-TO uri options */
