@@ -533,7 +533,7 @@ static struct ast_format_def wav16_f = {
 
 static struct ast_format_def wav_f = {
 	.name = "wav",
-	.exts = "wav",
+	.exts = "wave|wav8",
 	.open =	wav_open,
 	.rewrite = wav_rewrite,
 	.write = wav_write,

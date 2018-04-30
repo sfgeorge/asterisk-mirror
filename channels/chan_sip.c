@@ -18607,6 +18607,7 @@ static int get_refer_info(struct sip_pvt *transferer, struct sip_request *outgoi
 	}
 	h_refer_to = ast_strdupa(p_refer_to);
 	refer_to = get_in_brackets(h_refer_to);
+        ast_string_field_set(refer, dt_refer_to, refer_to);
 	if (!strncasecmp(refer_to, "sip:", 4)) {
 		refer_to += 4;			/* Skip sip: */
 	} else if (!strncasecmp(refer_to, "sips:", 5)) {
@@ -25600,7 +25601,7 @@ static int handle_invite_replaces(struct sip_pvt *p, struct sip_request *req,
 		int *nounlock, struct sip_pvt *replaces_pvt, struct ast_channel *replaces_chan)
 {
 	struct ast_channel *c;
-	RAII_VAR(struct ast_bridge *, bridge, NULL, ao2_cleanup);
+  struct ast_bridge *bridge;
 
 	if (req->ignore) {
 		return 0;
@@ -25616,6 +25617,7 @@ static int handle_invite_replaces(struct sip_pvt *p, struct sip_request *req,
 	}
 	append_history(p, "Xfer", "INVITE/Replace received");
 
+  /* Get a ref to ensure the channel cannot go away on us. */
 	c = ast_channel_ref(p->owner);
 
 	/* Fake call progress */
@@ -25635,16 +25637,22 @@ static int handle_invite_replaces(struct sip_pvt *p, struct sip_request *req,
 	ast_channel_unlock(replaces_chan);
 
 	if (bridge) {
+    /*
+		 * We have two refs of the channel.  One is held in c and the other
+		 * is notionally represented by p->owner.  The impart is "stealing"
+		 * the p->owner ref on success so the bridging system can have
+		 * control of when the channel is hung up.
+     */
 		if (ast_bridge_impart(bridge, c, replaces_chan, NULL,
 			AST_BRIDGE_IMPART_CHAN_INDEPENDENT)) {
 			ast_hangup(c);
-			ast_channel_unref(c);
 		}
+    ao2_ref(bridge, -1);
 	} else {
 		ast_channel_move(replaces_chan, c);
 		ast_hangup(c);
-		ast_channel_unref(c);
 	}
+  ast_channel_unref(c);
 	sip_pvt_lock(p);
 	return 0;
 }
@@ -26828,6 +26836,8 @@ static int local_attended_transfer(struct sip_pvt *transferer, struct ast_channe
  * at the completion of a blind transfer
  */
 struct blind_transfer_cb_data {
+	/*! Contents of the REFER's for dt use */
+        const char *dt_refer_to;
 	/*! Contents of the REFER's Referred-by header */
 	const char *referred_by;
 	/*! Domain of the URI in the REFER's Refer-To header */
@@ -26858,6 +26868,7 @@ static void blind_transfer_cb(struct ast_channel *chan, struct transfer_channel_
 	struct blind_transfer_cb_data *cb_data = user_data_wrapper->data;
 
 	pbx_builtin_setvar_helper(chan, "SIPTRANSFER", "yes");
+        pbx_builtin_setvar_helper(chan, "SIPREFER", cb_data->dt_refer_to);
 	pbx_builtin_setvar_helper(chan, "SIPTRANSFER_REFERER", cb_data->referred_by);
 	pbx_builtin_setvar_helper(chan, "SIPTRANSFER_REPLACES", cb_data->replaces);
 	pbx_builtin_setvar_helper(chan, "SIPDOMAIN", cb_data->domain);
@@ -27074,6 +27085,7 @@ static int handle_request_refer(struct sip_pvt *p, struct sip_request *req, uint
 
 	cb_data.domain = ast_strdupa(p->refer->refer_to_domain);
 	cb_data.referred_by = ast_strdupa(p->refer->referred_by);
+        cb_data.dt_refer_to = ast_strdupa(p->refer->dt_refer_to);
 
 	if (!ast_strlen_zero(p->refer->replaces_callid)) {
 		replaces_str = ast_str_create(128);
