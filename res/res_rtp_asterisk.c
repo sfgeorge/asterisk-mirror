@@ -4164,10 +4164,10 @@ static int ast_rtp_write(struct ast_rtp_instance *instance, struct ast_frame *fr
 		}
 	}
 
+		unsigned int framing_ms = ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(instance));
 	/* If no smoother is present see if we have to set one up */
 	if (!rtp->smoother && ast_format_can_be_smoothed(format)) {
 		unsigned int smoother_flags = ast_format_get_smoother_flags(format);
-		unsigned int framing_ms = ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(instance));
 
 		if (!framing_ms && (smoother_flags & AST_SMOOTHER_FLAG_FORCED)) {
 			framing_ms = ast_format_get_default_ms(format);
@@ -4195,6 +4195,54 @@ static int ast_rtp_write(struct ast_rtp_instance *instance, struct ast_frame *fr
 		}
 
 		while ((f = ast_smoother_read(rtp->smoother)) && (f->data.ptr)) {
+			ast_log(LOG_NOTICE,
+				"DBG2 ast_rtp_write() emitting smoothed frames."
+				" format: name %s ms %u len %u codec %d\n"
+
+				" f: data.ptr %d datalen %d len %d samples %d flags %d"
+				" f->subclass: integer %d format->name %s"
+				" f->subclass->format->codec: name %s sample_rate %d minimum_ms %d maximum_ms %d default_ms %d smooth %d"
+				" f->subclass->format: attribute_data %p"
+				" f->subclass->format->interface: codec %c\n"
+
+				" frame: data.ptr %d datalen %d len %d samples %d flags %d"
+				" frame->subclass: integer %d format->name %s"
+				" frame->subclass->format->codec: name %s sample_rate %d minimum_ms %d maximum_ms %d default_ms %d smooth %d"
+				" frame->subclass->format: attribute_data %p"
+				" frame->subclass->format->interface: codec %c"
+				"\n",
+				ast_format_get_name(format), framing_ms, ast_format_get_minimum_bytes(format), codec,
+
+
+				f->data.ptr, f->datalen, f->len, f->samples, f->flags,
+				(f->subclass && f->subclass->integer ? f->subclass->integer : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->name ? f->subclass->format->name : "?"),
+
+				(f->subclass && f->subclass->format && f->subclass->format->codec && f->subclass->format->codec->name ? f->subclass->format->codec->name : "?"),
+				(f->subclass && f->subclass->format && f->subclass->format->codec ? f->subclass->format->codec->sample_rate : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->codec ? f->subclass->format->codec->minimum_ms : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->codec ? f->subclass->format->codec->maximum_ms : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->codec ? f->subclass->format->codec->default_ms : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->codec ? f->subclass->format->codec->smooth : -1),
+
+				(f->subclass && f->subclass->format ? f->subclass->format->attribute_data : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->interface && f->subclass->format->interface->codec ? f->subclass->format->interface->codec : '?'),
+
+
+				frame->data.ptr, frame->datalen, frame->len, frame->samples, frame->flags,
+				(frame->subclass && frame->subclass->integer ? frame->subclass->integer : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->name ? frame->subclass->format->name : "?"),
+
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec && frame->subclass->format->codec->name ? frame->subclass->format->codec->name : "?"),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec ? frame->subclass->format->codec->sample_rate : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec ? frame->subclass->format->codec->minimum_ms : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec ? frame->subclass->format->codec->maximum_ms : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec ? frame->subclass->format->codec->default_ms : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec ? frame->subclass->format->codec->smooth : -1),
+
+				(frame->subclass && frame->subclass->format ? frame->subclass->format->attribute_data : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->interface && frame->subclass->format->interface->codec ? frame->subclass->format->interface->codec : '?')
+			);
 				rtp_raw_write(instance, f, codec);
 		}
 	} else {
@@ -4207,6 +4255,54 @@ static int ast_rtp_write(struct ast_rtp_instance *instance, struct ast_frame *fr
 			f = frame;
 		}
 		if (f->data.ptr) {
+			ast_log(LOG_NOTICE,
+				"DBG2 ast_rtp_write() emitting unsmoothed frames."
+				" format: name %s ms %u len %u codec %d\n"
+
+				" f: data.ptr %d datalen %d len %d samples %d flags %d"
+				" f->subclass: integer %d format->name %s"
+				" f->subclass->format->codec: name %s sample_rate %d minimum_ms %d maximum_ms %d default_ms %d smooth %d"
+				" f->subclass->format: attribute_data %p"
+				" f->subclass->format->interface: codec %c\n"
+
+				" frame: data.ptr %d datalen %d len %d samples %d flags %d"
+				" frame->subclass: integer %d format->name %s"
+				" frame->subclass->format->codec: name %s sample_rate %d minimum_ms %d maximum_ms %d default_ms %d smooth %d"
+				" frame->subclass->format: attribute_data %p"
+				" frame->subclass->format->interface: codec %c"
+				"\n",
+				ast_format_get_name(format), framing_ms, ast_format_get_minimum_bytes(format), codec,
+
+
+				f->data.ptr, f->datalen, f->len, f->samples, f->flags,
+				(f->subclass && f->subclass->integer ? f->subclass->integer : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->name ? f->subclass->format->name : "?"),
+
+				(f->subclass && f->subclass->format && f->subclass->format->codec && f->subclass->format->codec->name ? f->subclass->format->codec->name : "?"),
+				(f->subclass && f->subclass->format && f->subclass->format->codec ? f->subclass->format->codec->sample_rate : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->codec ? f->subclass->format->codec->minimum_ms : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->codec ? f->subclass->format->codec->maximum_ms : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->codec ? f->subclass->format->codec->default_ms : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->codec ? f->subclass->format->codec->smooth : -1),
+
+				(f->subclass && f->subclass->format ? f->subclass->format->attribute_data : -1),
+				(f->subclass && f->subclass->format && f->subclass->format->interface && f->subclass->format->interface->codec ? f->subclass->format->interface->codec : '?'),
+
+
+				frame->data.ptr, frame->datalen, frame->len, frame->samples, frame->flags,
+				(frame->subclass && frame->subclass->integer ? frame->subclass->integer : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->name ? frame->subclass->format->name : "?"),
+
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec && frame->subclass->format->codec->name ? frame->subclass->format->codec->name : "?"),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec ? frame->subclass->format->codec->sample_rate : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec ? frame->subclass->format->codec->minimum_ms : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec ? frame->subclass->format->codec->maximum_ms : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec ? frame->subclass->format->codec->default_ms : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->codec ? frame->subclass->format->codec->smooth : -1),
+
+				(frame->subclass && frame->subclass->format ? frame->subclass->format->attribute_data : -1),
+				(frame->subclass && frame->subclass->format && frame->subclass->format->interface && frame->subclass->format->interface->codec ? frame->subclass->format->interface->codec : '?')
+			);
 			rtp_raw_write(instance, f, codec);
 		}
 		if (f != frame) {
