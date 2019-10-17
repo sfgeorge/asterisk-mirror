@@ -4198,56 +4198,48 @@ static int ast_rtp_write(struct ast_rtp_instance *instance, struct ast_frame *fr
 
 			ast_log(LOG_NOTICE,
 				"DBG2 ast_rtp_write() emitting smoothed frames."
-				" format: name %s ms %u len %u codec %d\n"
-				" f: data.ptr %d datalen %d len %d samples %d flags %d",
-				ast_format_get_name(format), framing_ms, ast_format_get_minimum_bytes(format), codec,
-				f->data.ptr, f->datalen, f->len, f->samples, f->flags);
+				" format: name %s ",
+				ast_format_get_name(format));
 
-			ast_log(LOG_NOTICE, "HI"
-				" f->subclass: integer %d",
-				f->subclass.integer
-			);
+			ast_log(LOG_NOTICE,
+				"DBG2 ast_rtp_write() emitting smoothed frames."
+				" ms %u ",
+				framing_ms);
 
-			ast_log(LOG_NOTICE, "HI"
-				" format->name %s",
-				ast_format_get_name(f->subclass.format)
-			);
+			ast_log(LOG_NOTICE,
+				"DBG2 ast_rtp_write() emitting smoothed frames."
+				" len %u \n",
+				ast_format_get_minimum_bytes(format));
 
-			ast_log(LOG_NOTICE, "HI"
-				" f->subclass->format->codec: name %s",
-				(f->subclass.format != NULL ? ast_format_get_codec_name(f->subclass.format) : "?")
-			);
+			ast_log(LOG_NOTICE,
+				"DBG2 ast_rtp_write() emitting smoothed frames."
+				" codec %d\n",
+				codec);
 
-			ast_log(LOG_NOTICE, "HI"
-				" sample_rate %d",
-				(f->subclass.format != NULL ? ast_format_get_sample_rate(f->subclass.format) : -1)
-			);
+			ast_log(LOG_NOTICE,
+				"DBG2 ast_rtp_write() emitting smoothed frames."
+				" f: data.ptr %d",
+				f->data.ptr);
 
-			ast_log(LOG_NOTICE, "HI"
-				" minimum_bytes %d",
-				(f->subclass.format != NULL ? ast_format_get_minimum_bytes(f->subclass.format) : -1)
-			);
+			ast_log(LOG_NOTICE,
+				"DBG2 ast_rtp_write() emitting smoothed frames."
+				" datalen %d ",
+				f->datalen);
 
-			ast_log(LOG_NOTICE, "HI"
-				" minimum_ms %d ",
-				(f->subclass.format != NULL ? ast_format_get_minimum_ms(f->subclass.format) : -1)
-			);
+			ast_log(LOG_NOTICE,
+				"DBG2 ast_rtp_write() emitting smoothed frames."
+				" len %d ",
+				f->len);
 
-			ast_log(LOG_NOTICE, "HI"
-				" maximum_ms %d ",
-				(f->subclass.format != NULL ? ast_format_get_maximum_ms(f->subclass.format) : -1)
-			);
+			ast_log(LOG_NOTICE,
+				"DBG2 ast_rtp_write() emitting smoothed frames."
+				" samples %d",
+				f->samples);
 
-			ast_log(LOG_NOTICE, "HI"
-				" default_ms %d ",
-				(f->subclass.format != NULL ? ast_format_get_default_ms(f->subclass.format) : -1)
-			);
-
-			ast_log(LOG_NOTICE, "HI"
-				" smooth %d smooth-flags %d",
-				(f->subclass.format != NULL ? ast_format_can_be_smoothed(f->subclass.format) : -1),
-				(f->subclass.format != NULL ? ast_format_get_smoother_flags(f->subclass.format) : -1)
-			);
+			ast_log(LOG_NOTICE,
+				"DBG2 ast_rtp_write() emitting smoothed frames."
+				" flags %d",
+				f->flags);
 
 
 // //
