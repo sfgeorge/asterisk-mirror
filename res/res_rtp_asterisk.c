@@ -4195,56 +4195,6 @@ static int ast_rtp_write(struct ast_rtp_instance *instance, struct ast_frame *fr
 		}
 
 		while ((f = ast_smoother_read(rtp->smoother)) && (f->data.ptr)) {
-
-			ast_log(LOG_NOTICE,
-				"DBG2 ast_rtp_write() emitting smoothed frames."
-				" format: name %s ",
-				ast_format_get_name(format));
-
-			ast_log(LOG_NOTICE,
-				"DBG2 ast_rtp_write() emitting smoothed frames."
-				" ms %u ",
-				framing_ms);
-
-			ast_log(LOG_NOTICE,
-				"DBG2 ast_rtp_write() emitting smoothed frames."
-				" len %u \n",
-				ast_format_get_minimum_bytes(format));
-
-			ast_log(LOG_NOTICE,
-				"DBG2 ast_rtp_write() emitting smoothed frames."
-				" codec %d\n",
-				codec);
-
-
-
-
-
-
-			ast_log(LOG_NOTICE,
-				"DBG2 ast_rtp_write() emitting smoothed frames."
-				" datalen %d ",
-				f->datalen);
-
-			ast_log(LOG_NOTICE,
-				"DBG2 ast_rtp_write() emitting smoothed frames."
-				" len %ld ",
-				f->len);
-
-			ast_log(LOG_NOTICE,
-				"DBG2 ast_rtp_write() emitting smoothed frames."
-				" samples %d",
-				f->samples);
-
-			ast_log(LOG_NOTICE,
-				"DBG2 ast_rtp_write() emitting smoothed frames."
-				" flags %d",
-				f->flags);
-
-
-// //
-
-
 			ast_log(LOG_NOTICE,
 				"DBG2 ast_rtp_write() emitting smoothed frames."
 				" format: name %s ms %u len %u codec %d\n"
