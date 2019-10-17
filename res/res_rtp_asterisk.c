@@ -4215,33 +4215,33 @@ static int ast_rtp_write(struct ast_rtp_instance *instance, struct ast_frame *fr
 
 
 				f->data.ptr, f->datalen, f->len, f->samples, f->flags,
-				(f->subclass != NULL ? f->subclass->integer : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->name != NULL ? f->subclass->format->name : "?"),
+				f->integer,
+				(f->subclass.format != NULL && f->subclass.format->name != NULL ? f->subclass.format->name : "?"),
 
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL && f->subclass->format->codec->name != NULL ? f->subclass->format->codec->name : "?"),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL ? f->subclass->format->codec->sample_rate : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL ? f->subclass->format->codec->minimum_ms : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL ? f->subclass->format->codec->maximum_ms : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL ? f->subclass->format->codec->default_ms : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL ? f->subclass->format->codec->smooth : -1),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL && f->subclass.format->codec->name != NULL ? f->subclass.format->codec->name : "?"),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL ? f->subclass.format->codec->sample_rate : -1),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL ? f->subclass.format->codec->minimum_ms : -1),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL ? f->subclass.format->codec->maximum_ms : -1),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL ? f->subclass.format->codec->default_ms : -1),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL ? f->subclass.format->codec->smooth : -1),
 
-				(f->subclass != NULL && f->subclass->format != NULL ? f->subclass->format->attribute_data : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->interface != NULL && f->subclass->format->interface->codec != NULL ? f->subclass->format->interface->codec : '?'),
+				(f->subclass.format != NULL ? f->subclass.format.attribute_data : -1),
+				(f->subclass.format != NULL && f->subclass.format->interface != NULL && f->subclass.format->interface->codec != NULL ? f->subclass.format->interface->codec : '?'),
 
 
 				frame->data.ptr, frame->datalen, frame->len, frame->samples, frame->flags,
-				(frame->subclass != NULL ? frame->subclass->integer : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->name != NULL ? frame->subclass->format->name : "?"),
+				(frame->subclass != NULL ? frame->integer : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->name != NULL ? frame->subclass.format->name : "?"),
 
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL && frame->subclass->format->codec->name != NULL ? frame->subclass->format->codec->name : "?"),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL ? frame->subclass->format->codec->sample_rate : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL ? frame->subclass->format->codec->minimum_ms : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL ? frame->subclass->format->codec->maximum_ms : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL ? frame->subclass->format->codec->default_ms : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL ? frame->subclass->format->codec->smooth : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL && frame->subclass.format->codec->name != NULL ? frame->subclass.format->codec->name : "?"),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL ? frame->subclass.format->codec->sample_rate : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL ? frame->subclass.format->codec->minimum_ms : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL ? frame->subclass.format->codec->maximum_ms : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL ? frame->subclass.format->codec->default_ms : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL ? frame->subclass.format->codec->smooth : -1),
 
-				(frame->subclass != NULL && frame->subclass->format != NULL ? frame->subclass->format->attribute_data : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->interface != NULL && frame->subclass->format->interface->codec != NULL ? frame->subclass->format->interface->codec : '?')
+				(frame->subclass != NULL && frame->subclass.format != NULL ? frame->subclass.format.attribute_data : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->interface != NULL && frame->subclass.format->interface->codec != NULL ? frame->subclass.format->interface->codec : '?')
 			);
 				rtp_raw_write(instance, f, codec);
 		}
@@ -4275,33 +4275,33 @@ static int ast_rtp_write(struct ast_rtp_instance *instance, struct ast_frame *fr
 
 
 				f->data.ptr, f->datalen, f->len, f->samples, f->flags,
-				(f->subclass != NULL ? f->subclass->integer : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->name != NULL ? f->subclass->format->name : "?"),
+				f->integer,
+				(f->subclass.format != NULL && f->subclass.format->name != NULL ? f->subclass.format->name : "?"),
 
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL && f->subclass->format->codec->name != NULL ? f->subclass->format->codec->name : "?"),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL ? f->subclass->format->codec->sample_rate : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL ? f->subclass->format->codec->minimum_ms : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL ? f->subclass->format->codec->maximum_ms : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL ? f->subclass->format->codec->default_ms : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->codec != NULL ? f->subclass->format->codec->smooth : -1),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL && f->subclass.format->codec->name != NULL ? f->subclass.format->codec->name : "?"),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL ? f->subclass.format->codec->sample_rate : -1),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL ? f->subclass.format->codec->minimum_ms : -1),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL ? f->subclass.format->codec->maximum_ms : -1),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL ? f->subclass.format->codec->default_ms : -1),
+				(f->subclass.format != NULL && f->subclass.format->codec != NULL ? f->subclass.format->codec->smooth : -1),
 
-				(f->subclass != NULL && f->subclass->format != NULL ? f->subclass->format->attribute_data : -1),
-				(f->subclass != NULL && f->subclass->format != NULL && f->subclass->format->interface != NULL && f->subclass->format->interface->codec != NULL ? f->subclass->format->interface->codec : '?'),
+				(f->subclass.format != NULL ? f->subclass.format.attribute_data : -1),
+				(f->subclass.format != NULL && f->subclass.format->interface != NULL && f->subclass.format->interface->codec != NULL ? f->subclass.format->interface->codec : '?'),
 
 
 				frame->data.ptr, frame->datalen, frame->len, frame->samples, frame->flags,
-				(frame->subclass != NULL ? frame->subclass->integer : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->name != NULL ? frame->subclass->format->name : "?"),
+				(frame->subclass != NULL ? frame->integer : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->name != NULL ? frame->subclass.format->name : "?"),
 
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL && frame->subclass->format->codec->name != NULL ? frame->subclass->format->codec->name : "?"),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL ? frame->subclass->format->codec->sample_rate : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL ? frame->subclass->format->codec->minimum_ms : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL ? frame->subclass->format->codec->maximum_ms : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL ? frame->subclass->format->codec->default_ms : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->codec != NULL ? frame->subclass->format->codec->smooth : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL && frame->subclass.format->codec->name != NULL ? frame->subclass.format->codec->name : "?"),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL ? frame->subclass.format->codec->sample_rate : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL ? frame->subclass.format->codec->minimum_ms : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL ? frame->subclass.format->codec->maximum_ms : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL ? frame->subclass.format->codec->default_ms : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->codec != NULL ? frame->subclass.format->codec->smooth : -1),
 
-				(frame->subclass != NULL && frame->subclass->format != NULL ? frame->subclass->format->attribute_data : -1),
-				(frame->subclass != NULL && frame->subclass->format != NULL && frame->subclass->format->interface != NULL && frame->subclass->format->interface->codec != NULL ? frame->subclass->format->interface->codec : '?')
+				(frame->subclass != NULL && frame->subclass.format != NULL ? frame->subclass.format.attribute_data : -1),
+				(frame->subclass != NULL && frame->subclass.format != NULL && frame->subclass.format->interface != NULL && frame->subclass.format->interface->codec != NULL ? frame->subclass.format->interface->codec : '?')
 			);
 			rtp_raw_write(instance, f, codec);
 		}
