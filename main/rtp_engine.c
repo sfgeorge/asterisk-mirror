@@ -664,6 +664,7 @@ struct ast_rtp_codecs *ast_rtp_instance_get_codecs(struct ast_rtp_instance *inst
 
 int ast_rtp_codecs_payloads_initialize(struct ast_rtp_codecs *codecs)
 {
+	ast_log(LOG_NOTICE, "DBG5 line:%d ast_rtp_codecs_payloads_initialize() initializing with empty framing\n", __LINE__);
 	int res;
 
 	codecs->framing = 0;
@@ -738,6 +739,7 @@ void ast_rtp_codecs_payloads_copy(struct ast_rtp_codecs *src, struct ast_rtp_cod
 			ao2_unlock(instance);
 		}
 	}
+	ast_log(LOG_NOTICE, "DBG5 line:%d ast_rtp_codecs_payloads_copy() Setting dest->framing(%d) = src->framing(%d)\n", __LINE__, dest->framing, src->framing);
 	dest->framing = src->framing;
 	ast_rwlock_unlock(&src->codecs_lock);
 	ast_rwlock_unlock(&dest->codecs_lock);
