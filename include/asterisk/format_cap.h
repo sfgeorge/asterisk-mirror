@@ -49,7 +49,7 @@ enum ast_format_cap_flags {
 struct ast_format_cap *__ast_format_cap_alloc(enum ast_format_cap_flags flags);
 struct ast_format_cap *__ast_format_cap_alloc_debug(enum ast_format_cap_flags flags, const char *tag, const char *file, int line, const char *func);
 
-#ifdef REF_DEBUG
+#if 1 == 1
 #define ast_format_cap_alloc(flags) \
 	__ast_format_cap_alloc_debug((flags), "", __FILE__, __LINE__, __PRETTY_FUNCTION__)
 #define ast_t_format_cap_alloc(flags, tag) \
@@ -106,7 +106,7 @@ unsigned int ast_format_cap_get_framing(const struct ast_format_cap *cap);
 int __ast_format_cap_append(struct ast_format_cap *cap, struct ast_format *format, unsigned int framing);
 int __ast_format_cap_append_debug(struct ast_format_cap *cap, struct ast_format *format, unsigned int framing, const char *tag, const char *file, int line, const char *func);
 
-#ifdef REF_DEBUG
+#if 1 == 1
 #define ast_format_cap_append(cap, format, framing) \
 	__ast_format_cap_append_debug((cap), (format), (framing), "", __FILE__, __LINE__, __PRETTY_FUNCTION__)
 #define ast_t_format_cap_append(cap, format, framing, tag) \

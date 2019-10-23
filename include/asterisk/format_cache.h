@@ -268,7 +268,7 @@ int ast_format_cache_set(struct ast_format *format);
 struct ast_format *__ast_format_cache_get(const char *name);
 struct ast_format *__ast_format_cache_get_debug(const char *name, const char *tag, const char *file, int line, const char *func);
 
-#ifdef REF_DEBUG
+#if 1 == 1
 #define ast_format_cache_get(name) \
 	__ast_format_cache_get_debug((name), "", __FILE__, __LINE__, __PRETTY_FUNCTION__)
 #define ast_t_format_cache_get(name, tag) \
