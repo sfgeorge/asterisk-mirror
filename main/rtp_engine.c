@@ -984,6 +984,10 @@ struct ast_format *ast_rtp_codecs_get_payload_format(struct ast_rtp_codecs *code
 
 void ast_rtp_codecs_set_framing(struct ast_rtp_codecs *codecs, unsigned int framing)
 {
+	ast_rwlock_wrlock(&codecs->codecs_lock);
+	ast_log(LOG_NOTICE, "DBG5 line:%d ast_rtp_codecs_set_framing() attempting to set framing from %d to %d\n", __LINE__, codecs->framing, framing);
+	ast_rwlock_unlock(&codecs->codecs_lock);
+
 	if (!framing) {
 		return;
 	}

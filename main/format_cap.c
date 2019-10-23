@@ -152,6 +152,7 @@ struct ast_format_cap *__ast_format_cap_alloc_debug(enum ast_format_cap_flags fl
 
 void ast_format_cap_set_framing(struct ast_format_cap *cap, unsigned int framing)
 {
+	ast_log(LOG_NOTICE, "DBG5 line:%d ast_format_cap_set_framing() setting framing from %d to %d\n", __LINE__, cap->framing, framing);
 	cap->framing = framing;
 }
 
@@ -165,6 +166,7 @@ static void format_cap_framed_destroy(void *obj)
 
 static inline int format_cap_framed_init(struct format_cap_framed *framed, struct ast_format_cap *cap, struct ast_format *format, unsigned int framing)
 {
+	ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Entered with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing cap->framing, framing);
 	struct format_cap_framed_list *list;
 
 	framed->framing = framing;
@@ -172,6 +174,7 @@ static inline int format_cap_framed_init(struct format_cap_framed *framed, struc
 	if (ast_format_get_codec_id(format) >= AST_VECTOR_SIZE(&cap->formats)) {
 		if (AST_VECTOR_REPLACE(&cap->formats, ast_format_get_codec_id(format), format_cap_framed_list_empty)) {
 			ao2_ref(framed, -1);
+			ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Exited -1 with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing cap->framing, framing);
 			return -1;
 		}
 	}
@@ -180,6 +183,7 @@ static inline int format_cap_framed_init(struct format_cap_framed *framed, struc
 	/* This takes the allocation reference */
 	if (AST_VECTOR_APPEND(&cap->preference_order, framed)) {
 		ao2_ref(framed, -1);
+		ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Exited -1 with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing cap->framing, framing);
 		return -1;
 	}
 
@@ -188,6 +192,7 @@ static inline int format_cap_framed_init(struct format_cap_framed *framed, struc
 	AST_LIST_INSERT_HEAD(list, framed, entry);
 
 	cap->framing = MIN(cap->framing, framing ? framing : ast_format_get_default_ms(format));
+	ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Exited 0 with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing cap->framing, framing);
 
 	return 0;
 }

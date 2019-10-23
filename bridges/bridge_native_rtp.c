@@ -710,6 +710,8 @@ static int native_rtp_bridge_compatible_check(struct ast_bridge *bridge, struct 
 	write_ptime0 = ast_format_cap_get_format_framing(cap0, ast_channel_rawwriteformat(bc0->chan));
 	write_ptime1 = ast_format_cap_get_format_framing(cap1, ast_channel_rawwriteformat(bc1->chan));
 
+	ast_log(LOG_NOTICE, "DBG5 line:%d native_rtp_bridge_compatible_check() Bridge '%s' read_ptime0 %d read_ptime1 %d write_ptime0 %d write_ptime1 %d\n", __LINE__, bridge->uniqueid, read_ptime0, read_ptime1, write_ptime0, write_ptime1);
+
 	if (read_ptime0 != write_ptime1 || read_ptime1 != write_ptime0) {
 		ast_debug(1, "Bridge '%s': Packetization differs between RTP streams (%d != %d or %d != %d). Cannot native bridge in RTP\n",
 			bridge->uniqueid,
