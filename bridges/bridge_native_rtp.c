@@ -734,8 +734,8 @@ static int native_rtp_bridge_compatible(struct ast_bridge *bridge)
 
 	/* We require two channels before even considering native bridging */
 	if (bridge->num_channels != 2) {
-		ast_debug(1, "Bridge '%s' can not use native RTP bridge as two channels are required\n",
-			bridge->uniqueid);
+		ast_debug(1, "DBG5 Bridge '%s' can not use native RTP bridge as two channels are required as opposed to '%d'.\n",
+			bridge->uniqueid, bridge->num_channels);
 		return 0;
 	}
 
