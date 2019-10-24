@@ -166,7 +166,7 @@ static void format_cap_framed_destroy(void *obj)
 
 static inline int format_cap_framed_init(struct format_cap_framed *framed, struct ast_format_cap *cap, struct ast_format *format, unsigned int framing)
 {
-	ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Entered with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing cap->framing, framing);
+	ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Entered with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing, cap->framing, framing);
 	struct format_cap_framed_list *list;
 
 	framed->framing = framing;
@@ -174,7 +174,7 @@ static inline int format_cap_framed_init(struct format_cap_framed *framed, struc
 	if (ast_format_get_codec_id(format) >= AST_VECTOR_SIZE(&cap->formats)) {
 		if (AST_VECTOR_REPLACE(&cap->formats, ast_format_get_codec_id(format), format_cap_framed_list_empty)) {
 			ao2_ref(framed, -1);
-			ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Exited -1 with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing cap->framing, framing);
+			ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Exited -1 with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing, cap->framing, framing);
 			return -1;
 		}
 	}
@@ -183,7 +183,7 @@ static inline int format_cap_framed_init(struct format_cap_framed *framed, struc
 	/* This takes the allocation reference */
 	if (AST_VECTOR_APPEND(&cap->preference_order, framed)) {
 		ao2_ref(framed, -1);
-		ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Exited -1 with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing cap->framing, framing);
+		ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Exited -1 with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing, cap->framing, framing);
 		return -1;
 	}
 
@@ -192,7 +192,7 @@ static inline int format_cap_framed_init(struct format_cap_framed *framed, struc
 	AST_LIST_INSERT_HEAD(list, framed, entry);
 
 	cap->framing = MIN(cap->framing, framing ? framing : ast_format_get_default_ms(format));
-	ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Exited 0 with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing cap->framing, framing);
+	ast_log(LOG_NOTICE, "DBG5 line:%d format_cap_framed_init() Exited 0 with framed->framing %d cap->framing %d framing %d\n", __LINE__, framed->framing, cap->framing, framing);
 
 	return 0;
 }
@@ -447,7 +447,7 @@ size_t ast_format_cap_count(const struct ast_format_cap *cap)
 		ast_format_cap_empty_result = 0;
 	}
 
-	if (ast_format_cap_empty_result != (ast_format_cap_count == 0)) {
+	if (ast_format_cap_empty_result != (count == 0)) {
 		ast_log(LOG_NOTICE, "DBG5 line:%d ast_format_cap_count() '%d' and ast_format_cap_empty '%d' disagree with each other !!!\n", __LINE__, count, ast_format_cap_empty_result);
 	}
 
@@ -511,8 +511,10 @@ unsigned int ast_format_cap_get_format_framing(const struct ast_format_cap *cap,
 	framing = cap->framing != UINT_MAX ? cap->framing : ast_format_get_default_ms(format);
 	list = AST_VECTOR_GET_ADDR(&cap->formats, ast_format_get_codec_id(format));
 
+	enum ast_format_cmp_res outcome;
 	AST_LIST_TRAVERSE(list, framed, entry) {
 		enum ast_format_cmp_res res = ast_format_cmp(format, framed->format);
+		outcome = res;
 
 		if (res == AST_FORMAT_CMP_NOT_EQUAL) {
 			continue;
@@ -526,10 +528,10 @@ unsigned int ast_format_cap_get_format_framing(const struct ast_format_cap *cap,
 	}
 
 	if (result && result->framing) {
-		ast_log(LOG_NOTICE, "DBG5 line:%d ast_format_cap_get_format_framing() setting result framing(%d) = result->framing(%d); (res == AST_FORMAT_CMP_EQUAL) %d\n", __LINE__, framing, result->framing, (res == AST_FORMAT_CMP_EQUAL));
+		ast_log(LOG_NOTICE, "DBG5 line:%d ast_format_cap_get_format_framing() setting result framing(%d) = result->framing(%d); AST_FORMAT_CMP(%d)\n", __LINE__, framing, result->framing, outcome);
 		framing = result->framing;
 	} else {
-		ast_log(LOG_NOTICE, "DBG5 line:%d ast_format_cap_get_format_framing() returning non-result framing %d; (res == AST_FORMAT_CMP_EQUAL) %d\n", __LINE__, framing, (res == AST_FORMAT_CMP_EQUAL));
+		ast_log(LOG_NOTICE, "DBG5 line:%d ast_format_cap_get_format_framing() returning non-result framing %d; AST_FORMAT_CMP(%d)\n", __LINE__, framing, outcome);
 	}
 
 	return framing;
