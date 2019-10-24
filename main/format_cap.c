@@ -511,7 +511,7 @@ unsigned int ast_format_cap_get_format_framing(const struct ast_format_cap *cap,
 	framing = cap->framing != UINT_MAX ? cap->framing : ast_format_get_default_ms(format);
 	list = AST_VECTOR_GET_ADDR(&cap->formats, ast_format_get_codec_id(format));
 
-	enum ast_format_cmp_res outcome;
+	enum ast_format_cmp_res outcome = AST_FORMAT_CMP_NOT_EQUAL;
 	AST_LIST_TRAVERSE(list, framed, entry) {
 		enum ast_format_cmp_res res = ast_format_cmp(format, framed->format);
 		outcome = res;
