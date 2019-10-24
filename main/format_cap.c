@@ -434,6 +434,23 @@ int ast_format_cap_update_by_allow_disallow(struct ast_format_cap *cap, const ch
 
 size_t ast_format_cap_count(const struct ast_format_cap *cap)
 {
+	int count = AST_VECTOR_SIZE(&cap->preference_order);
+	int ast_format_cap_empty_result = -1;
+
+	if (count > 1) {
+		ast_format_cap_empty_result = 0;
+	}
+
+	if (count == 0 || AST_VECTOR_GET(&cap->preference_order, 0)->format == ast_format_none) {
+		ast_format_cap_empty_result = 1;
+	} else {
+		ast_format_cap_empty_result = 0;
+	}
+
+	if (ast_format_cap_empty_result != (ast_format_cap_count == 0)) {
+		ast_log(LOG_NOTICE, "DBG5 line:%d ast_format_cap_count() '%d' and ast_format_cap_empty '%d' disagree with each other !!!\n", __LINE__, count, ast_format_cap_empty_result);
+	}
+
 	return AST_VECTOR_SIZE(&cap->preference_order);
 }
 
