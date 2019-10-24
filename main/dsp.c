@@ -1434,16 +1434,19 @@ static int ast_dsp_silence_noise_with_energy(struct ast_dsp *dsp, struct ast_fra
 		odata = f->data.ptr;
 		len = f->datalen;
 		if (ast_format_cmp(f->subclass.format, ast_format_ulaw)) {
+			ast_log(LOG_NOTICE, "DBG5 line:%d ast_dsp_silence_noise_with_energy() !!! Running down buggy ulaw branch where (ast_format_cmp(f->subclass.format, ast_format_ulaw) == AST_FORMAT_CMP_EQUAL) is %d and (ast_format_cmp(f->subclass.format, ast_format_alaw) == AST_FORMAT_CMP_EQUAL) is %d\n", __LINE__, (ast_format_cmp(f->subclass.format, ast_format_ulaw) == AST_FORMAT_CMP_EQUAL), (ast_format_cmp(f->subclass.format, ast_format_alaw) == AST_FORMAT_CMP_EQUAL));
 			s = ast_alloca(len * 2);
 			for (x = 0; x < len; x++) {
 				s[x] = AST_MULAW(odata[x]);
 			}
 		} else if (ast_format_cmp(f->subclass.format, ast_format_alaw)) {
+			ast_log(LOG_NOTICE, "DBG5 line:%d ast_dsp_silence_noise_with_energy() !!! Running down buggy alaw branch where (ast_format_cmp(f->subclass.format, ast_format_ulaw) == AST_FORMAT_CMP_EQUAL) is %d and (ast_format_cmp(f->subclass.format, ast_format_alaw) == AST_FORMAT_CMP_EQUAL) is %d\n", __LINE__, (ast_format_cmp(f->subclass.format, ast_format_ulaw) == AST_FORMAT_CMP_EQUAL), (ast_format_cmp(f->subclass.format, ast_format_alaw) == AST_FORMAT_CMP_EQUAL));
 			s = ast_alloca(len * 2);
 			for (x = 0; x < len; x++) {
 				s[x] = AST_ALAW(odata[x]);
 			}
 		} else {
+			ast_log(LOG_NOTICE, "DBG5 line:%d ast_dsp_silence_noise_with_energy() !!! Running down buggy else branch where (ast_format_cmp(f->subclass.format, ast_format_ulaw) == AST_FORMAT_CMP_EQUAL) is %d and (ast_format_cmp(f->subclass.format, ast_format_alaw) == AST_FORMAT_CMP_EQUAL) is %d\n", __LINE__, (ast_format_cmp(f->subclass.format, ast_format_ulaw) == AST_FORMAT_CMP_EQUAL), (ast_format_cmp(f->subclass.format, ast_format_alaw) == AST_FORMAT_CMP_EQUAL));
 			ast_log(LOG_WARNING, "Can only calculate silence on signed-linear, alaw or ulaw frames :(\n");
 			return 0;
 		}
