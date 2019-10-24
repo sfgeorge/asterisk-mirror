@@ -4181,7 +4181,11 @@ static int ast_rtp_write(struct ast_rtp_instance *instance, struct ast_frame *fr
 				return -1;
 			}
 			ast_smoother_set_flags(rtp->smoother, smoother_flags);
+		} else {
+			ast_log(LOG_NOTICE, "DBG5 line:%d ast_rtp_write() smoothing disabled with framing_ms %d\n", __LINE__, framing_ms);
 		}
+	} else {
+		ast_log(LOG_NOTICE, "DBG5 line:%d ast_rtp_write() wow. smoothing disabled because ast_format_can_be_smoothed is %d\n", __LINE__, smoother_flags);
 	}
 
 	/* Feed audio frames into the actual function that will create a frame and send it */
