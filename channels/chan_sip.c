@@ -13095,13 +13095,15 @@ static void add_codec_to_sdp(const struct sip_pvt *p,
 	struct ast_format *format,
 	struct ast_str **m_buf,
 	struct ast_str **a_buf,
-	int debug = 1,
+	int debug,
 	int *min_packet_size,
 	int *max_packet_size)
 {
 	int rtp_code;
 	const char *mime;
 	unsigned int rate, framing;
+
+	debug = 1;
 
 	if (debug)
 		ast_verbose("Adding codec %s to SDP\n", ast_format_get_name(format));
@@ -13509,7 +13511,7 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 			  ast_format_cap_get_names(tmpcap, &codec_buf),
 			  p->novideo ? "True" : "False", p->notext ? "True" : "False");
 		ast_debug(1, "** Our prefcodec: %s \n", ast_format_cap_get_names(p->prefcaps, &codec_buf));
-		ast_log(LOG_NOTICE, "DBG5 line:%d add_sdp() ** Our prefcodec: %s\n", ast_format_cap_get_names(p->prefcaps, &codec_buf));
+		ast_log(LOG_NOTICE, "DBG5 line:%d add_sdp() ** Our prefcodec: %s\n", __LINE__, ast_format_cap_get_names(p->prefcaps, &codec_buf));
 	}
 
 	get_our_media_address(p, needvideo, needtext, &addr, &vaddr, &taddr, &dest, &vdest, &tdest);
@@ -13603,7 +13605,7 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 			ast_sdp_get_rtp_profile(a_crypto ? 1 : 0, p->rtp,
 				ast_test_flag(&p->flags[2], SIP_PAGE3_USE_AVPF),
 				ast_test_flag(&p->flags[2], SIP_PAGE3_FORCE_AVP)));
-		ast_log(LOG_NOTICE, "DBG5 line:%d add_sdp() min_audio_packet_size %d max_audio_packet_size %d doing_directmedia %d\n", min_audio_packet_size, max_audio_packet_size, doing_directmedia);
+		ast_log(LOG_NOTICE, "DBG5 line:%d add_sdp() min_audio_packet_size %d max_audio_packet_size %d doing_directmedia %d\n", __LINE__, min_audio_packet_size, max_audio_packet_size, doing_directmedia);
 
 		/* Now, start adding audio codecs. These are added in this order:
 		   - First what was requested by the calling channel
