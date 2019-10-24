@@ -13095,7 +13095,7 @@ static void add_codec_to_sdp(const struct sip_pvt *p,
 	struct ast_format *format,
 	struct ast_str **m_buf,
 	struct ast_str **a_buf,
-	int debug,
+	int debug = 1,
 	int *min_packet_size,
 	int *max_packet_size)
 {
@@ -13420,7 +13420,7 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 	int needaudio = FALSE;
 	int needvideo = FALSE;
 	int needtext = FALSE;
-	int debug = sip_debug_test_pvt(p);
+	int debug = 1;
 	int min_audio_packet_size = 0;
 	int max_audio_packet_size = 0;
 	int min_video_packet_size = 0;
