@@ -13124,6 +13124,8 @@ static void add_codec_to_sdp(const struct sip_pvt *p,
 
 	framing = ast_format_cap_get_format_framing(p->caps, format);
 
+	ast_log(LOG_NOTICE, "DBG5 line:%d add_codec_to_sdp() framing according to ast_format_cap_get_format_framing() %d according to ast_rtp_codecs_get_framing() %d\n", __LINE__, framing, ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(p->rtp)));
+
 	if (ast_format_cmp(format, ast_format_g723) == AST_FORMAT_CMP_EQUAL) {
 		/* Indicate that we don't support VAD (G.723.1 annex A) */
 		ast_str_append(a_buf, 0, "a=fmtp:%d annexa=no\r\n", rtp_code);
@@ -13138,12 +13140,18 @@ static void add_codec_to_sdp(const struct sip_pvt *p,
 	}
 
 	if (framing && (framing < *min_packet_size)) {
+		ast_log(LOG_NOTICE, "DBG5 line:%d add_codec_to_sdp() changing min_packet_size from %d to %d\n", __LINE__, *min_packet_size, framing);
 		*min_packet_size = framing;
 	}
 
 	/* Our first codec packetization processed cannot be zero */
 	if ((*min_packet_size) == 0 && framing) {
+		ast_log(LOG_NOTICE, "DBG5 line:%d add_codec_to_sdp() changing min_packet_size from %d to %d\n", __LINE__, *min_packet_size, framing);
 		*min_packet_size = framing;
+	}
+
+	if ((*min_packet_size) == 0) {
+		ast_log(LOG_NOTICE, "DBG5 line:%d add_codec_to_sdp() yikes min_packet_size is still %d and framing is %d\n", __LINE__, *min_packet_size, framing);
 	}
 
 	if ((*max_packet_size) == 0 && ast_format_get_maximum_ms(format)) {
@@ -13501,6 +13509,7 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 			  ast_format_cap_get_names(tmpcap, &codec_buf),
 			  p->novideo ? "True" : "False", p->notext ? "True" : "False");
 		ast_debug(1, "** Our prefcodec: %s \n", ast_format_cap_get_names(p->prefcaps, &codec_buf));
+		ast_log(LOG_NOTICE, "DBG5 line:%d add_sdp() ** Our prefcodec: %s\n", ast_format_cap_get_names(p->prefcaps, &codec_buf));
 	}
 
 	get_our_media_address(p, needvideo, needtext, &addr, &vaddr, &taddr, &dest, &vdest, &tdest);
@@ -13594,6 +13603,7 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 			ast_sdp_get_rtp_profile(a_crypto ? 1 : 0, p->rtp,
 				ast_test_flag(&p->flags[2], SIP_PAGE3_USE_AVPF),
 				ast_test_flag(&p->flags[2], SIP_PAGE3_FORCE_AVP)));
+		ast_log(LOG_NOTICE, "DBG5 line:%d add_sdp() min_audio_packet_size %d max_audio_packet_size %d doing_directmedia %d\n", min_audio_packet_size, max_audio_packet_size, doing_directmedia);
 
 		/* Now, start adding audio codecs. These are added in this order:
 		   - First what was requested by the calling channel
@@ -13615,6 +13625,7 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 					continue;
 				}
 
+				ast_log(LOG_NOTICE, "DBG5 line:%d add_sdp() calling add_codec_to_sdp()\n", __LINE__);
 				add_codec_to_sdp(p, tmp_fmt, &m_audio, &a_audio, debug, &min_audio_packet_size, &max_audio_packet_size);
 				ast_format_cap_append(alreadysent, tmp_fmt, 0);
 				ao2_ref(tmp_fmt, -1);
@@ -13631,6 +13642,7 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 			}
 
 			if (ast_format_get_type(tmp_fmt) == AST_MEDIA_TYPE_AUDIO) {
+				ast_log(LOG_NOTICE, "DBG5 line:%d add_sdp() calling add_codec_to_sdp()\n", __LINE__);
 				add_codec_to_sdp(p, tmp_fmt, &m_audio, &a_audio, debug, &min_audio_packet_size, &max_audio_packet_size);
 			} else if (needvideo && ast_format_get_type(tmp_fmt) == AST_MEDIA_TYPE_VIDEO) {
 				add_vcodec_to_sdp(p, tmp_fmt, &m_video, &a_video, debug, &min_video_packet_size);
@@ -13652,6 +13664,7 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 			}
 
 			if (ast_format_get_type(tmp_fmt) == AST_MEDIA_TYPE_AUDIO) {
+				ast_log(LOG_NOTICE, "DBG5 line:%d add_sdp() calling add_codec_to_sdp()\n", __LINE__);
 				add_codec_to_sdp(p, tmp_fmt, &m_audio, &a_audio, debug, &min_audio_packet_size, &max_audio_packet_size);
 			} else if (needvideo && ast_format_get_type(tmp_fmt) == AST_MEDIA_TYPE_VIDEO) {
 				add_vcodec_to_sdp(p, tmp_fmt, &m_video, &a_video, debug, &min_video_packet_size);
@@ -33441,6 +33454,7 @@ static int sip_set_rtp_peer(struct ast_channel *chan, struct ast_rtp_instance *i
 
 	p = ast_channel_tech_pvt(chan);
 	if (!p) {
+		ast_log(LOG_NOTICE, "DBG5 line:%d sip_set_rtp_peer() Exiting early with -1\n", __LINE__);
 		return -1;
 	}
 	sip_pvt_lock(p);
@@ -33448,6 +33462,7 @@ static int sip_set_rtp_peer(struct ast_channel *chan, struct ast_rtp_instance *i
 		/* I suppose it could be argued that if this happens it is a bug. */
 		ast_debug(1, "The private is not owned by channel %s anymore.\n", ast_channel_name(chan));
 		sip_pvt_unlock(p);
+		ast_log(LOG_NOTICE, "DBG5 line:%d sip_set_rtp_peer() Exiting early with 0\n", __LINE__);
 		return 0;
 	}
 
@@ -33455,13 +33470,16 @@ static int sip_set_rtp_peer(struct ast_channel *chan, struct ast_rtp_instance *i
 	if ((instance || vinstance || tinstance) &&
 		!ast_channel_is_bridged(chan) &&
 		!sip_cfg.directrtpsetup) {
+
 		sip_pvt_unlock(p);
+		ast_log(LOG_NOTICE, "DBG5 line:%d sip_set_rtp_peer() Exiting early with 0\n", __LINE__);
 		return 0;
 	}
 
 	if (p->alreadygone) {
 		/* If we're destroyed, don't bother */
 		sip_pvt_unlock(p);
+		ast_log(LOG_NOTICE, "DBG5 line:%d sip_set_rtp_peer() Exiting early with 0\n", __LINE__);
 		return 0;
 	}
 
@@ -33470,6 +33488,7 @@ static int sip_set_rtp_peer(struct ast_channel *chan, struct ast_rtp_instance *i
 	*/
 	if (nat_active && !ast_test_flag(&p->flags[0], SIP_DIRECT_MEDIA_NAT)) {
 		sip_pvt_unlock(p);
+		ast_log(LOG_NOTICE, "DBG5 line:%d sip_set_rtp_peer() Exiting early with 0\n", __LINE__);
 		return 0;
 	}
 
@@ -33528,6 +33547,7 @@ static int sip_set_rtp_peer(struct ast_channel *chan, struct ast_rtp_instance *i
 		 */
 		ast_clear_flag(&p->flags[2], SIP_PAGE3_DIRECT_MEDIA_OUTGOING);
 		sip_pvt_unlock(p);
+		ast_log(LOG_NOTICE, "DBG5 line:%d sip_set_rtp_peer() Exiting early with 0\n", __LINE__);
 		return 0;
 	}
 
@@ -33548,6 +33568,7 @@ static int sip_set_rtp_peer(struct ast_channel *chan, struct ast_rtp_instance *i
 	/* Reset lastrtprx timer */
 	p->lastrtprx = p->lastrtptx = time(NULL);
 	sip_pvt_unlock(p);
+	ast_log(LOG_NOTICE, "DBG5 line:%d sip_set_rtp_peer() Exiting cleanly with 0\n", __LINE__);
 	return 0;
 }
 
