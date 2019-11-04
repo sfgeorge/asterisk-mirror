@@ -4184,7 +4184,7 @@ static int ast_rtp_write(struct ast_rtp_instance *instance, struct ast_frame *fr
 		} else {
 			ast_log(LOG_NOTICE, "DBG5 line:%d ast_rtp_write() smoothing disabled with framing_ms %d\n", __LINE__, framing_ms);
 		}
-	} else {
+	} else if (!rtp->smoother) {
 		ast_log(LOG_NOTICE, "DBG5 line:%d ast_rtp_write() wow. smoothing disabled because ast_format_can_be_smoothed is %d\n", __LINE__, ast_format_can_be_smoothed(format));
 	}
 
