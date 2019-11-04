@@ -4202,16 +4202,19 @@ static int ast_rtp_write(struct ast_rtp_instance *instance, struct ast_frame *fr
 			ast_log(LOG_NOTICE,
 				"DBG2 ast_rtp_write() emitting smoothed frames."
 				" format: name %s ms %u len %u codec %d"
+				"\n"
 				" format->codec: name %s sample_rate %d minimum_bytes %d minimum_ms %d maximum_ms %d default_ms %d smooth %d smooth-flags %d"
 				"\n"
 
 				" f: datalen %d len %ld samples %d flags %d"
 				" f->subclass: integer %d format->name %s"
+				"\n"
 				" f->subclass->format->codec: name %s sample_rate %d minimum_bytes %d minimum_ms %d maximum_ms %d default_ms %d smooth %d smooth-flags %d"
 				"\n"
 
 				" frame: datalen %d len %ld samples %d flags %d"
 				" frame->subclass: integer %d format->name %s"
+				"\n"
 				" frame->subclass->format->codec: name %s sample_rate %d minimum_bytes %d minimum_ms %d maximum_ms %d default_ms %d smooth %d smooth-flags %d"
 				"\n",
 
@@ -4267,16 +4270,19 @@ static int ast_rtp_write(struct ast_rtp_instance *instance, struct ast_frame *fr
 			ast_log(LOG_NOTICE,
 				"DBG2 ast_rtp_write() emitting unsmoothed frames."
 				" format: name %s ms %u len %u codec %d"
+				"\n"
 				" format->codec: name %s sample_rate %d minimum_bytes %d minimum_ms %d maximum_ms %d default_ms %d smooth %d smooth-flags %d"
 				"\n"
 
 				" f: datalen %d len %ld samples %d flags %d"
 				" f->subclass: integer %d format->name %s"
+				"\n"
 				" f->subclass->format->codec: name %s sample_rate %d minimum_bytes %d minimum_ms %d maximum_ms %d default_ms %d smooth %d smooth-flags %d"
 				"\n"
 
 				" frame: datalen %d len %ld samples %d flags %d"
 				" frame->subclass: integer %d format->name %s"
+				"\n"
 				" frame->subclass->format->codec: name %s sample_rate %d minimum_bytes %d minimum_ms %d maximum_ms %d default_ms %d smooth %d smooth-flags %d"
 				"\n",
 
