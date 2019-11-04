@@ -8160,12 +8160,14 @@ static struct ast_channel *sip_new(struct sip_pvt *i, int state, const char *tit
 	ast_channel_nativeformats_set(tmp, caps);
 	ao2_ref(caps, -1);
 
-	ast_debug(3, "*** Our native formats are %s \n", ast_format_cap_get_names(ast_channel_nativeformats(tmp), &codec_buf));
-	ast_debug(3, "*** Joint capabilities are %s \n", ast_format_cap_get_names(i->jointcaps, &codec_buf));
-	ast_debug(3, "*** Our capabilities are %s \n", ast_format_cap_get_names(i->caps, &codec_buf));
-	ast_debug(3, "*** AST_CODEC_CHOOSE formats are %s \n", ast_format_get_name(fmt));
+	ast_debug(3, "DBG6 sip_new() *** Our native formats are %s with framing %d\n", ast_format_cap_get_names(ast_channel_nativeformats(tmp), &codec_buf), ast_format_cap_get_framing(ast_channel_nativeformats(tmp)));
+	ast_debug(3, "DBG6 sip_new() *** Joint capabilities are %s with framing %d\n", ast_format_cap_get_names(i->jointcaps, &codec_buf), ast_format_cap_get_framing(i->jointcaps));
+	ast_debug(3, "DBG6 sip_new() *** Our capabilities are %s with framing %d\n", ast_format_cap_get_names(i->caps, &codec_buf), ast_format_cap_get_framing(i->caps));
+	ast_debug(3, "DBG6 sip_new() *** peercaps are %s with framing %d\n", ast_format_cap_get_names(i->peercaps, &codec_buf), ast_format_cap_get_framing(i->peercaps));
+	ast_debug(3, "DBG6 sip_new() *** redircaps are %s with framing %d\n", ast_format_cap_get_names(i->redircaps, &codec_buf), ast_format_cap_get_framing(i->redircaps));
+	ast_debug(3, "DBG6 sip_new() *** AST_CODEC_CHOOSE formats are %s \n", ast_format_get_name(fmt));
 	if (ast_format_cap_count(i->prefcaps)) {
-		ast_debug(3, "*** Our preferred formats from the incoming channel are %s \n", ast_format_cap_get_names(i->prefcaps, &codec_buf));
+		ast_debug(3, "DBG6 sip_new() *** Our preferred formats from the incoming channel are %s with framing %d\n", ast_format_cap_get_names(i->prefcaps, &codec_buf), ast_format_cap_get_framing(i->prefcaps));
 	}
 
 	/* If we have a prefcodec setting, we have an inbound channel that set a
