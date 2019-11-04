@@ -6071,10 +6071,14 @@ static int create_addr_from_peer(struct sip_pvt *dialog, struct sip_peer *peer)
 	ast_copy_flags(&dialog->flags[0], &peer->flags[0], SIP_FLAGS_TO_COPY);
 	ast_copy_flags(&dialog->flags[1], &peer->flags[1], SIP_PAGE2_FLAGS_TO_COPY);
 	ast_copy_flags(&dialog->flags[2], &peer->flags[2], SIP_PAGE3_FLAGS_TO_COPY);
+	struct ast_str *codec_buf = ast_str_alloca(AST_FORMAT_CAP_NAMES_LEN);
+	ast_log(LOG_NOTICE, "DBG6 line:%d create_addr_from_peer() before: dialog capabilities are %s with framing %d\n", __LINE__, ast_format_cap_get_names(dialog->caps, &codec_buf), ast_format_cap_get_framing(dialog->caps));
 	/* Take the peer's caps */
 	if (peer->caps) {
+		ast_log(LOG_NOTICE, "DBG6 line:%d create_addr_from_peer() before: peer capabilities are %s with framing %d\n", __LINE__, ast_format_cap_get_names(peer->caps, &codec_buf), ast_format_cap_get_framing(peer->caps));
 		ast_format_cap_remove_by_type(dialog->caps, AST_MEDIA_TYPE_UNKNOWN);
 		ast_format_cap_append_from_cap(dialog->caps, peer->caps, AST_MEDIA_TYPE_UNKNOWN);
+		ast_log(LOG_NOTICE, "DBG6 line:%d create_addr_from_peer() after: dialog capabilities are %s with framing %d\n", __LINE__, ast_format_cap_get_names(dialog->caps, &codec_buf), ast_format_cap_get_framing(dialog->caps));
 	}
 	dialog->amaflags = peer->amaflags;
 
@@ -6101,6 +6105,7 @@ static int create_addr_from_peer(struct sip_pvt *dialog, struct sip_peer *peer)
 		/* Set Frame packetization */
 		dialog->autoframing = peer->autoframing;
 		ast_rtp_codecs_set_framing(ast_rtp_instance_get_codecs(dialog->rtp), ast_format_cap_get_framing(dialog->caps));
+		ast_log(LOG_NOTICE, "DBG6 line:%d create_addr_from_peer() set autoframing to %d' and codecs-framing(%d) = format-framing(%d), for codecs '%s'\n", __LINE__, dialog->autoframing, ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(dialog->rtp)), ast_format_cap_get_framing(dialog->caps), ast_format_cap_get_names(dialog->caps, &codec_buf));
 	}
 
 	/* XXX TODO: get fields directly from peer only as they are needed using dialog->relatedpeer */
