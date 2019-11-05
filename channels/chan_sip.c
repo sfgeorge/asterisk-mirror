@@ -10886,7 +10886,7 @@ static int process_sdp(struct sip_pvt *p, struct sip_request *req, int t38action
 	ast_rtp_codecs_payload_formats(&newvideortp, vpeercapability, &vpeernoncodeccapability);
 	ast_rtp_codecs_payload_formats(&newtextrtp, tpeercapability, &tpeernoncodeccapability);
 
-	ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp() Loaded peercapability to framing %d from codec framing of %d\n", __LINE__, ast_format_cap_get_framing(peercapability), newaudiortp->framing);
+	ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp() Loaded peercapability to framing %d from codec framing of %d\n", __LINE__, ast_format_cap_get_framing(peercapability), ast_rtp_codecs_get_framing(newaudiortp));
 
 	ast_format_cap_append_from_cap(newpeercapability, peercapability, AST_MEDIA_TYPE_AUDIO);
 	ast_format_cap_append_from_cap(newpeercapability, vpeercapability, AST_MEDIA_TYPE_VIDEO);
@@ -11116,7 +11116,7 @@ static int process_sdp(struct sip_pvt *p, struct sip_request *req, int t38action
 	/* Ok, we're going with this offer */
 	ast_debug(2, "We're settling with these formats: %s\n", ast_format_cap_get_names(p->jointcaps, &codec_buf));
 	tmp_fmt = ast_format_cap_get_format(p->jointcaps, 0);
-	ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp() We're settling with these formats p->jointcaps: name %s framing %d format_framing %d - rtp-instance: framing %d\n", __LINE__, ast_format_cap_get_names(ast_channel_nativeformats(p->jointcaps), &cap_buf), ast_format_cap_get_framing(p->jointcaps), ast_format_cap_get_format_framing(p->jointcaps, tmp_fmt), ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(p->rtp)));
+	ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp() We're settling with these formats p->jointcaps: name %s framing %d format_framing %d - rtp-instance: framing %d\n", __LINE__, ast_format_cap_get_names(p->jointcaps, &cap_buf), ast_format_cap_get_framing(p->jointcaps), ast_format_cap_get_format_framing(p->jointcaps, tmp_fmt), ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(p->rtp)));
 
 	if (!p->owner) { /* There's no open channel owning us so we can return here. For a re-invite or so, we proceed */
 		res = 0;
