@@ -13518,7 +13518,11 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 			  ast_format_cap_get_names(tmpcap, &codec_buf),
 			  p->novideo ? "True" : "False", p->notext ? "True" : "False");
 		ast_debug(1, "** Our prefcodec: %s \n", ast_format_cap_get_names(p->prefcaps, &codec_buf));
-		ast_log(LOG_NOTICE, "DBG5 line:%d add_sdp() ** Our prefcodec: %s\n", __LINE__, ast_format_cap_get_names(p->prefcaps, &codec_buf));
+		ast_log(LOG_NOTICE, "DBG6 line:%d add_sdp() ** caps names: %s framing: %d\n", __LINE__, ast_format_cap_get_names(p->caps, &codec_buf), ast_format_cap_get_framing(p->caps));
+		ast_log(LOG_NOTICE, "DBG6 line:%d add_sdp() ** jointcaps names: %s framing: %d\n", __LINE__, ast_format_cap_get_names(p->jointcaps, &codec_buf), ast_format_cap_get_framing(p->jointcaps));
+		ast_log(LOG_NOTICE, "DBG6 line:%d add_sdp() ** peercaps names: %s framing: %d\n", __LINE__, ast_format_cap_get_names(p->peercaps, &codec_buf), ast_format_cap_get_framing(p->peercaps));
+		ast_log(LOG_NOTICE, "DBG6 line:%d add_sdp() ** redircaps names: %s framing: %d\n", __LINE__, ast_format_cap_get_names(p->redircaps, &codec_buf), ast_format_cap_get_framing(p->redircaps));
+		ast_log(LOG_NOTICE, "DBG6 line:%d add_sdp() ** Our prefcodec prefcaps names: %s framing: %d\n", __LINE__, ast_format_cap_get_names(p->prefcaps, &codec_buf), ast_format_cap_get_framing(p->prefcaps));
 	}
 
 	get_our_media_address(p, needvideo, needtext, &addr, &vaddr, &taddr, &dest, &vdest, &tdest);
@@ -13630,6 +13634,7 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 
 				if ((ast_format_get_type(tmp_fmt) != AST_MEDIA_TYPE_AUDIO) ||
 					(ast_format_cap_iscompatible_format(tmpcap, tmp_fmt) == AST_FORMAT_CMP_NOT_EQUAL)) {
+						ast_log(LOG_NOTICE, "DBG6 line:%d add_sdp() prefcap loop ** skipping the adding of %s with framing %d. Equality was %d\n", __LINE__, ast_format_cap_get_names(p->prefcaps, &codec_buf), ast_format_cap_get_framing(p->prefcaps), ast_format_cap_iscompatible_format(tmpcap, tmp_fmt));
 					ao2_ref(tmp_fmt, -1);
 					continue;
 				}
@@ -13646,6 +13651,7 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 			tmp_fmt = ast_format_cap_get_format(tmpcap, x);
 
 			if (ast_format_cap_iscompatible_format(alreadysent, tmp_fmt) != AST_FORMAT_CMP_NOT_EQUAL) {
+				ast_log(LOG_NOTICE, "DBG6 line:%d add_sdp() tmpcap loop ** skipping the adding of %s with framing %d. Equality was %d\n", __LINE__, ast_format_cap_get_names(tmpcap, &codec_buf), ast_format_cap_get_framing(tmpcap), ast_format_cap_iscompatible_format(alreadysent, tmp_fmt));
 				ao2_ref(tmp_fmt, -1);
 				continue;
 			}
@@ -13668,6 +13674,7 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 			tmp_fmt = ast_format_cap_get_format(p->caps, x);
 
 			if (ast_format_cap_iscompatible_format(alreadysent, tmp_fmt) != AST_FORMAT_CMP_NOT_EQUAL) {
+				ast_log(LOG_NOTICE, "DBG6 line:%d add_sdp() outgoing_call loop ** skipping the adding of %s with framing %d. Equality was %d\n", __LINE__, ast_format_cap_get_names(p->caps, &codec_buf), ast_format_cap_get_framing(p->caps), ast_format_cap_iscompatible_format(alreadysent, tmp_fmt));
 				ao2_ref(tmp_fmt, -1);
 				continue;
 			}
@@ -13718,8 +13725,13 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 		}
 
 		if (!ast_test_flag(&p->flags[0], SIP_OUTGOING)) {
-			ast_debug(1, "Setting framing on incoming call: %u\n", min_audio_packet_size);
-			ast_rtp_codecs_set_framing(ast_rtp_instance_get_codecs(p->rtp), min_audio_packet_size);
+			if (global_reg_retry_403) {
+				ast_log(LOG_NOTICE, "DBG7 line:%d add_sdp() :: Behaving WITHOUT Alex's autoframing changes. Not blindly applying a min_audio_packet_size of %d\n", __LINE__, min_audio_packet_size);
+			} else {
+				ast_log(LOG_NOTICE, "DBG7 line:%d add_sdp() :: Behaving WITH Alex's autoframing changes. Blindly applying a min_audio_packet_size of %d\n", __LINE__, min_audio_packet_size);
+				ast_debug(1, "Setting framing on incoming call: %u\n", min_audio_packet_size);
+				ast_rtp_codecs_set_framing(ast_rtp_instance_get_codecs(p->rtp), min_audio_packet_size);
+			}
 		}
 
 		if (!doing_directmedia) {
