@@ -10236,6 +10236,7 @@ static int process_sdp(struct sip_pvt *p, struct sip_request *req, int t38action
 	/* START UNKNOWN */
 	struct ast_str *codec_buf = ast_str_alloca(AST_FORMAT_CAP_NAMES_LEN);
 	struct ast_format *tmp_fmt;
+	struct ast_format *tmp_fmt2;
 	/* END UNKNOWN */
 
 	/* Initial check */
@@ -10295,8 +10296,10 @@ static int process_sdp(struct sip_pvt *p, struct sip_request *req, int t38action
 			if (process_sdp_a_sendonly(value, &sendonly)) {
 				processed = TRUE;
 			}
-			else if (process_sdp_a_audio(value, p, &newaudiortp, &last_rtpmap_codec))
+			else if (process_sdp_a_audio(value, p, &newaudiortp, &last_rtpmap_codec)) {
 				processed = TRUE;
+				ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp_a_audio() has just been run and processed '%s'\n", __LINE__, value);
+			}
 			else if (process_sdp_a_video(value, p, &newvideortp, &last_rtpmap_codec))
 				processed = TRUE;
 			else if (process_sdp_a_text(value, p, &newtextrtp, red_fmtp, &red_num_gen, red_data_pt, &last_rtpmap_codec))
@@ -10754,6 +10757,7 @@ static int process_sdp(struct sip_pvt *p, struct sip_request *req, int t38action
 						processed = TRUE;
 					} else if (process_sdp_a_audio(value, p, &newaudiortp, &last_rtpmap_codec)) {
 						processed = TRUE;
+						ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp_a_audio() has just been run and processed '%s'\n", __LINE__, value);
 					} else if (process_sdp_a_rtcp_mux(value, p, &remote_rtcp_mux_audio)) {
 						processed = TRUE;
 					}
@@ -10875,6 +10879,8 @@ static int process_sdp(struct sip_pvt *p, struct sip_request *req, int t38action
 	ast_rtp_codecs_payload_formats(&newvideortp, vpeercapability, &vpeernoncodeccapability);
 	ast_rtp_codecs_payload_formats(&newtextrtp, tpeercapability, &tpeernoncodeccapability);
 
+	ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp() Loaded peercapability to framing %d from codec framing of %d\n", __LINE__, ast_format_cap_get_framing(peercapability), newaudiortp->framing);
+
 	ast_format_cap_append_from_cap(newpeercapability, peercapability, AST_MEDIA_TYPE_AUDIO);
 	ast_format_cap_append_from_cap(newpeercapability, vpeercapability, AST_MEDIA_TYPE_VIDEO);
 	ast_format_cap_append_from_cap(newpeercapability, tpeercapability, AST_MEDIA_TYPE_TEXT);
@@ -10922,6 +10928,8 @@ static int process_sdp(struct sip_pvt *p, struct sip_request *req, int t38action
 		ast_format_cap_append_from_cap(p->peercaps, newpeercapability, AST_MEDIA_TYPE_UNKNOWN); /* The other side's capability in latest offer */
 		p->jointnoncodeccapability = newnoncodeccapability;     /* DTMF capabilities */
 
+		ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp() 1st round applying newpeercapability %s with p->jointcaps-framing %d and rtp-instance-framing %d\n", __LINE__, ast_format_cap_get_names(p->jointcaps, &codec_buf), ast_format_cap_get_framing(p->jointcaps), ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(p->rtp)));
+
 		/* respond with single most preferred joint codec, limiting the other side's choice */
 		if (ast_test_flag(&p->flags[1], SIP_PAGE2_PREFERRED_CODEC)) {
 			unsigned int framing;
@@ -10930,7 +10938,12 @@ static int process_sdp(struct sip_pvt *p, struct sip_request *req, int t38action
 			framing = ast_format_cap_get_format_framing(p->jointcaps, tmp_fmt);
 			ast_format_cap_remove_by_type(p->jointcaps, AST_MEDIA_TYPE_UNKNOWN);
 			ast_format_cap_append(p->jointcaps, tmp_fmt, framing);
+
+			ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp() 2nd round applying newpeercapability %s with framing %d which should equal p->jointcaps-framing %d ; rtp-instance-framing %d\n", __LINE__, ast_format_cap_get_names(p->jointcaps, &codec_buf), framing, ast_format_cap_get_framing(p->jointcaps), ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(p->rtp)));
+
 			ao2_ref(tmp_fmt, -1);
+		} else {
+			ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp() Settling with with cap-framing %d and rtp-instance-framing %d\n", __LINE__, ast_format_cap_get_framing(p->caps), ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(p->rtp)));
 		}
 	}
 
@@ -11095,6 +11108,8 @@ static int process_sdp(struct sip_pvt *p, struct sip_request *req, int t38action
 
 	/* Ok, we're going with this offer */
 	ast_debug(2, "We're settling with these formats: %s\n", ast_format_cap_get_names(p->jointcaps, &codec_buf));
+	tmp_fmt = ast_format_cap_get_format(p->jointcaps, 0);
+	ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp() We're settling with these formats p->jointcaps: name %s framing %d format_framing %d - rtp-instance: framing %d\n", __LINE__, ast_format_cap_get_names(ast_channel_nativeformats(p->jointcaps), &cap_buf), ast_format_cap_get_framing(p->jointcaps), ast_format_cap_get_format_framing(p->jointcaps, tmp_fmt), ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(p->rtp)));
 
 	if (!p->owner) { /* There's no open channel owning us so we can return here. For a re-invite or so, we proceed */
 		res = 0;
@@ -11123,6 +11138,10 @@ static int process_sdp(struct sip_pvt *p, struct sip_request *req, int t38action
 			ast_format_cap_append_from_cap(caps, vpeercapability, AST_MEDIA_TYPE_VIDEO);
 			ast_format_cap_append_from_cap(caps, tpeercapability, AST_MEDIA_TYPE_TEXT);
 			ast_channel_nativeformats_set(p->owner, caps);
+
+			tmp_fmt2 = ast_format_cap_get_format(ast_channel_nativeformats(p->owner), 0);
+			ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp() nativeformats p->owner: name %s framing %d format_framing %d - p->jointcaps: framing %d format_framing %d - rtp-instance: framing %d\n", __LINE__, ast_format_cap_get_names(ast_channel_nativeformats(p->owner), &cap_buf),  ast_format_cap_get_framing(ast_channel_nativeformats(p->owner)), ast_format_cap_get_format_framing(ast_channel_nativeformats(p->owner), tmp_fmt2), ast_format_cap_get_framing(p->jointcaps), ast_format_cap_get_format_framing(p->jointcaps, tmp_fmt), ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(p->rtp)));
+
 			ao2_ref(caps, -1);
 			ao2_ref(tmp_fmt, -1);
 		}
