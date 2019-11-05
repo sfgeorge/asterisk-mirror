@@ -11463,10 +11463,17 @@ static int process_sdp_a_audio(const char *a, struct sip_pvt *p, struct ast_rtp_
 			}
 		}
 
+		ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp_a_audio entered with cap-framing %d and rtp-instance-framing %d\n", __LINE__, ast_format_cap_get_framing(p->caps), ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(p->rtp)));
 		if (framing && p->autoframing) {
-			ast_debug(1, "Setting framing to %ld\n", framing);
-			ast_format_cap_set_framing(p->caps, framing);
+			if (global_reg_retry_403) {
+				ast_log(LOG_NOTICE, "DBG7 line:%d process_sdp_a_audio rtp instance :: Setting framing to %ld :: WITHOUT Alex's autoframing changes\n", __LINE__, framing);
+				ast_rtp_codecs_set_framing(ast_rtp_instance_get_codecs(p->rtp), framing);
+			} else {
+				ast_log(LOG_NOTICE, "DBG7 line:%d process_sdp_a_audio latecapabilities :: Setting framing to %ld :: WITH Alex's autoframing changes\n", __LINE__, framing);
+				ast_format_cap_set_framing(p->caps, framing);
+			}
 		}
+		ast_log(LOG_NOTICE, "DBG6 line:%d process_sdp_a_audio leaving with cap-framing %d and rtp-instance-framing %d\n", __LINE__, ast_format_cap_get_framing(p->caps), ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(p->rtp)));
 		found = TRUE;
 	} else if (sscanf(a, "rtpmap: %30u %127[^/]/%30u", &codec, mimeSubtype, &sample_rate) == 3) {
 		/* We have a rtpmap to handle */
