@@ -7327,13 +7327,19 @@ static void try_suggested_sip_codec(struct sip_pvt *p)
 
 	char *strtok_ptr;
 
+	struct ast_str *codec_buf = ast_str_alloca(AST_FORMAT_CAP_NAMES_LEN);
 	if (p->outgoing_call) {
 		codec_list = pbx_builtin_getvar_helper(p->owner, "SIP_CODEC_OUTBOUND");
+		ast_log(LOG_NOTICE, "DBG6 line:%d try_suggested_sip_codec() SIP_CODEC_OUTBOUND '%s'\n", __LINE__, codec_list);
 	} else if (!(codec_list = pbx_builtin_getvar_helper(p->owner, "SIP_CODEC_INBOUND"))) {
 		codec_list = pbx_builtin_getvar_helper(p->owner, "SIP_CODEC");
+		ast_log(LOG_NOTICE, "DBG6 line:%d try_suggested_sip_codec() SIP_CODEC_INBOUND nil SIP_CODEC '%s'\n", __LINE__, codec_list);
+	} else {
+		ast_log(LOG_NOTICE, "DBG6 line:%d try_suggested_sip_codec() SIP_CODEC_INBOUND '%s'\n", __LINE__, codec_list);
 	}
 
 	if (ast_strlen_zero(codec_list)) {
+		ast_log(LOG_NOTICE, "DBG6 line:%d try_suggested_sip_codec() Bailing out because no codec_list found in channel variables. p->jointcaps names '%s' framing %d\n", __LINE__, ast_format_cap_get_names(p->jointcaps, &codec_buf), ast_format_cap_get_framing(p->jointcaps));
 		return;
 	}
 
@@ -7380,6 +7386,7 @@ static void try_suggested_sip_codec(struct sip_pvt *p)
 	 * like the Opus Codec or iLBC 20. The cached formats contain the default
 	 * parameters, which could be different than the negotiated (joint) result. */
 	ast_format_cap_replace_from_cap(p->jointcaps, original_jointcaps, AST_MEDIA_TYPE_UNKNOWN);
+	ast_log(LOG_NOTICE, "DBG6 line:%d try_suggested_sip_codec() Finished with p->jointcaps names '%s' framing %d\n", __LINE__, ast_format_cap_get_names(p->jointcaps, &codec_buf), ast_format_cap_get_framing(p->jointcaps));
 
 	ao2_ref(original_jointcaps, -1);
 	return;
