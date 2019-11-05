@@ -14070,6 +14070,19 @@ static int transmit_response_with_sdp(struct sip_pvt *p, const char *msg, const 
 		add_cc_call_info_to_response(p, &resp);
 	}
 	if (p->rtp) {
+		if (!p->autoframing && !ast_test_flag(&p->flags[0], SIP_OUTGOING)) {
+			if (global_reg_retry_403) {
+				ast_log(LOG_NOTICE, "DBG7 line:%d transmit_response_with_sdp() :: Behaving WITHOUT Alex's autoframing changes. Applying cap-framing of %d to rtp-instance\n", __LINE__, ast_format_cap_get_framing(p->caps));
+
+				ast_debug(1, "Setting framing from config on incoming call\n");
+				ast_rtp_codecs_set_framing(ast_rtp_instance_get_codecs(p->rtp), ast_format_cap_get_framing(p->caps));
+			} else {
+				ast_log(LOG_NOTICE, "DBG7 line:%d transmit_response_with_sdp() :: Behaving without Alex's autoframing changes. Not applying cap-framing of %d to rtp-instance\n", __LINE__, ast_format_cap_get_framing(p->caps));
+			}
+		}
+
+		ast_log(LOG_NOTICE, "DBG6 line:%d transmit_response_with_sdp() :: Activating rtp-instance with framing of %d\n", __LINE__, ast_rtp_codecs_get_framing(ast_rtp_instance_get_codecs(p->rtp)));
+
 		ast_rtp_instance_activate(p->rtp);
 		try_suggested_sip_codec(p);
 		if (p->t38.state == T38_ENABLED) {
