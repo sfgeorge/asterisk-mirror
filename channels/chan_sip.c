@@ -13695,10 +13695,8 @@ static enum sip_result add_sdp(struct sip_request *resp, struct sip_pvt *p, int 
 			ast_str_append(&a_audio, 0, "a=maxptime:%d\r\n", max_audio_packet_size);
 		}
 
-		if (!ast_test_flag(&p->flags[0], SIP_OUTGOING)) {
-			ast_debug(1, "Setting framing on incoming call: %u\n", min_audio_packet_size);
-			ast_rtp_codecs_set_framing(ast_rtp_instance_get_codecs(p->rtp), min_audio_packet_size);
-		}
+		ast_debug(1, "Setting framing on %s call: %u\n", ast_test_flag(&p->flags[0], SIP_OUTGOING) ? "outgoing" : "incoming", min_audio_packet_size);
+		ast_rtp_codecs_set_framing(ast_rtp_instance_get_codecs(p->rtp), min_audio_packet_size);
 
 		if (!doing_directmedia) {
 			if (ast_test_flag(&p->flags[2], SIP_PAGE3_ICE_SUPPORT)) {
